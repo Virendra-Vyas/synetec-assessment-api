@@ -1,25 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using SynetecAssessmentApi.Domain;
-using System;
+﻿using SynetecAssessmentApi.Domain;
+using SynetecAssessmentApi.Persistence.Interfaces;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SynetecAssessmentApi.Persistence
 {
-    public class DbContextGenerator
+    public class DbContextGenerator : IDbContextGenerator
     {
-        public static void Initialize(IServiceProvider serviceProvider)
+        private readonly AppDbContext _context;
+        public DbContextGenerator(AppDbContext context)
         {
-            using var context = new AppDbContext(
-                serviceProvider.GetRequiredService<DbContextOptions<AppDbContext>>());
-
-            if (context.Employees.Any()) return;
-
-            SeedData(context);
+            _context = context;
         }
 
-        public static void SeedData(AppDbContext context)
+        public void SeedData()
         {
             var departments = new List<Department>
             {
@@ -45,10 +38,10 @@ namespace SynetecAssessmentApi.Persistence
                 new Employee(12, "Jennifer Smith", "Accountant (Junior)", 48000, 1),
             };
 
-            context.Departments.AddRange(departments);
-            context.Employees.AddRange(employees);
+            _context.Departments.AddRange(departments);
+            _context.Employees.AddRange(employees);
 
-            context.SaveChanges();
+            _context.SaveChanges();
         }
     }
 }

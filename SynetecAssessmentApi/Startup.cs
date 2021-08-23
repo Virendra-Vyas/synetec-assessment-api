@@ -5,7 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using SynetecAssessmentApi.Extension;
 using SynetecAssessmentApi.Persistence;
+using SynetecAssessmentApi.Persistence.Interfaces;
+using SynetecAssessmentApi.Persistence.Repositories;
+using SynetecAssessmentApi.Services;
 
 namespace SynetecAssessmentApi
 {
@@ -22,13 +26,23 @@ namespace SynetecAssessmentApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SynetecAssessmentApi", Version = "v1" });
             });
 
+
             services.AddDbContext<AppDbContext>(options =>
                 options.UseInMemoryDatabase(databaseName: "HrDb"));
+
+            services.AddTransient<IBonusPoolService, BonusPoolService>();
+            services.AddTransient<IEmployeeService, EmployeeService>();
+
+            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+            services.AddTransient<IDbContextGenerator, DbContextGenerator>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,7 +56,8 @@ namespace SynetecAssessmentApi
             }
 
             app.UseHttpsRedirection();
-
+            app.ExceptionMiddleware();
+            app.Cors();
             app.UseRouting();
 
             app.UseAuthorization();
