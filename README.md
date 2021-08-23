@@ -18,4 +18,4 @@ To sumbit your test, please
 3. Commit your changes to your (forked) repo 
 4. Send us an http link to your repo that contains the completed test 
 
-**This repo is Read-Only!!** So please don't try to open a pull request
+This is my Finished Solution.
